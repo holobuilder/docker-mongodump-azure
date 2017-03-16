@@ -14,7 +14,7 @@ make_backup() {
 
   mkdir "$BACKUP_FOLDER"
 
-  /mongodump -h $MONGODB_PORT_27017_TCP_ADDR -d $MONGO_DB -o $BACKUP_FOLDER
+  /mongodump -h $MONGO_HOST -d $MONGO_DB -o $BACKUP_FOLDER
 
   tar -zcvf $BACKUP_NAME.tgz -C /tmp/ $BACKUP_NAME
 }

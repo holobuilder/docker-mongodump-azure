@@ -7,7 +7,7 @@ Single-Shot-Run:
   docker run -d \
     --name mongodb-azure-backup \
     --link <mongodb container>:mongodb \
-    -e "MONGO_DB=<database name>" \
+    -e "MONGODB_DB=<database name>" \
     -e "AZURE_CONTAINER=<storage container name>" \
     -e "AZURE_STORAGE_ACCOUNT=<storage account name>" \
     -e "AZURE_STORAGE_KEY=<storage account key>" \

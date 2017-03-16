@@ -4,16 +4,12 @@ LABEL maintainer "philip.martzok@gmail.com"
 
 RUN npm install --global azure-cli
 
-RUN \
-    echo http://dl-3.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories && \
-    echo http://dl-3.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories && \
-    apk add --no-cache mongodb-tools && \
-    rm /usr/bin/mongotop /usr/bin/mongoexport /usr/bin/mongorestore /usr/bin/mongostat /usr/bin/mongofiles /usr/bin/mongoimport /usr/bin/mongooplog /usr/bin/bsondump
+ADD bin/mongodump /
+RUN chmod 0755 /mongodump
 
 ENV BACKUP_FILENAME backup
 
 ADD backup.sh /
 RUN chmod 0755 backup.sh
 
-CMD ["/backup.sh"]
-ENTRYPOINT ["/bin/sh"]
+CMD ["sh","/backup.sh"]

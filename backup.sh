@@ -23,10 +23,20 @@ AZURE_CONTAINER=${AZURE_CONTAINER}
 AZURE_STORAGE_ACCOUNT=${AZURE_STORAGE_ACCOUNT}
 AZURE_STORAGE_KEY=${AZURE_STORAGE_KEY}
 
+AZURE_STORAGE_CONNECTION_STRING="DefaultEndpointsProtocol=https;BlobEndpoint=https://$AZURE_STORAGE_ACCOUNT.blob.core.windows.net/;AccountName=$AZURE_STORAGE_ACCOUNT;AccountKey=$AZURE_STORAGE_KEY"
+
 upload_backup() {
   # Send to cloud storage
   azure telemetry --disable
-  azure storage blob upload -q $BACKUP_NAME.tgz $AZURE_CONTAINER -c "DefaultEndpointsProtocol=https;BlobEndpoint=https://$AZURE_STORAGE_ACCOUNT.blob.core.windows.net/;AccountName=$AZURE_STORAGE_ACCOUNT;AccountKey=$AZURE_STORAGE_KEY"
+
+  # Create container if it doesn't exist yet (upload fails otherwise)
+  grep -wq $AZURE_CONTAINER <<< $(azure storage container list -c $AZURE_STORAGE_CONNECTION_STRING)
+  CONTAINER_EXISTS=$?
+  if [ "$CONTAINER_EXISTS" -gt "0" ]; then
+    azure storage container create $AZURE_CONTAINER -c $AZURE_STORAGE_CONNECTION_STRING
+  fi
+
+  azure storage blob upload -q $BACKUP_NAME.tgz $AZURE_CONTAINER -c $AZURE_STORAGE_CONNECTION_STRING
 
 }
 

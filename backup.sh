@@ -30,8 +30,10 @@ upload_backup() {
   azure telemetry --disable
 
   # Create container if it doesn't exist yet (upload fails otherwise)
+  set +e
   grep -wq $AZURE_CONTAINER <<< $(azure storage container list -c $AZURE_STORAGE_CONNECTION_STRING)
   CONTAINER_EXISTS=$?
+  set -e
   if [ "$CONTAINER_EXISTS" -gt "0" ]; then
     azure storage container create $AZURE_CONTAINER -c $AZURE_STORAGE_CONNECTION_STRING
   fi

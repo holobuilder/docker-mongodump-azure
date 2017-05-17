@@ -12,7 +12,7 @@ Single-Shot-Run:
     -e "AZURE_CONTAINER=<storage container name>" \
     -e "AZURE_STORAGE_ACCOUNT=<storage account name>" \
     -e "AZURE_STORAGE_KEY=<storage account key>" \
-    phimar/mongodump-azure
+    holobuilder/mongodump-azure
 ```
 
 Scheduling using cron:

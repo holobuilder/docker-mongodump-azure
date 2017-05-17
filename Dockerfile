@@ -12,4 +12,6 @@ ENV BACKUP_FILENAME backup
 ADD backup.sh /
 RUN chmod 0755 backup.sh
 
-CMD ["sh","/backup.sh"]
+RUN apk add --update bash
+
+CMD ["bash","/backup.sh"]

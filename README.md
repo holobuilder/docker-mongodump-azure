@@ -17,5 +17,5 @@ Single-Shot-Run:
 
 Scheduling using cron:
 ```
-  echo "* 3 * * * <docker user> docker start mongodb-azure-backup" > /etc/crontab
+  echo "0 3 * * * <docker user> docker start mongodb-azure-backup" > /etc/crontab
 ```

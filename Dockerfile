@@ -1,6 +1,6 @@
-FROM mhart/alpine-node
+FROM node:lts-alpine
 
-LABEL maintainer "philip.martzok@gmail.com"
+LABEL maintainer="philip@holobuilder.com"
 
 RUN npm install --global azure-cli
 

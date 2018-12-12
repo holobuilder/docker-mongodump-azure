@@ -16,9 +16,9 @@ make_backup() {
 
   # if 'MONGO_DB' is empty then backup all databases
   if [[ -n "$MONGO_DB" ]]; then
-    /mongodump -h $MONGO_HOST -d $MONGO_DB -o $BACKUP_FOLDER
+    mongodump -h $MONGO_HOST -d $MONGO_DB -o $BACKUP_FOLDER
   else 
-    /mongodump -h $MONGO_HOST -o $BACKUP_FOLDER
+    mongodump -h $MONGO_HOST -o $BACKUP_FOLDER
   fi
 
   tar -zcvf $BACKUP_NAME.tgz -C /tmp/ $BACKUP_NAME

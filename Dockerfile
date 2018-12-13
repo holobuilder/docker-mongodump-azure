@@ -1,17 +1,28 @@
-FROM node:lts-alpine
+FROM mongo
 
 LABEL maintainer="philip@holobuilder.com"
 
-RUN npm install --global azure-cli
+RUN apt-get update
+RUN apt-get install -y \
+    apt-transport-https \
+    lsb-release \
+    software-properties-common
 
-RUN apk add libcrypto1.1 libssl1.1 --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/main
-RUN apk add mongodb-tools=4.0.4-r0 --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community
+RUN echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $(lsb_release -cs) main" | \
+    tee /etc/apt/sources.list.d/azure-cli.list
+
+RUN apt-key \
+    --keyring /etc/apt/trusted.gpg.d/Microsoft.gpg adv \
+    --keyserver packages.microsoft.com \
+    --recv-keys BC528686B50D79E339D3721CEB3E94ADBE1229CF
+
+RUN apt-get update
+RUN apt-get install azure-cli
 
 ENV BACKUP_FILENAME backup
+ENV AZURE_CORE_COLLECT_TELEMETRY false
 
 ADD backup.sh /
 RUN chmod 0755 backup.sh
-
-RUN apk add --no-cache bash
 
 CMD ["bash","/backup.sh"]

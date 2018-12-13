@@ -6,6 +6,7 @@ DATETIME=`date +"%Y-%m-%d-%H-%M-%S"`
 FILENAME=${BACKUP_FILENAME}
 MONGO_HOST=${MONGODB_HOST:=$MONGODB_PORT_27017_TCP_ADDR}
 MONGO_DB=${MONGODB_DB}
+MONGO_URI=${MONGO_URI}
 
 BACKUP_NAME="$FILENAME-$MONGO_DB-$DATETIME"
 BACKUP_FOLDER="/tmp/$BACKUP_NAME/"
@@ -14,11 +15,15 @@ make_backup() {
 
   mkdir "$BACKUP_FOLDER"
 
-  # if 'MONGO_DB' is empty then backup all databases
-  if [[ -n "$MONGO_DB" ]]; then
-    mongodump -h $MONGO_HOST -d $MONGO_DB -o $BACKUP_FOLDER
-  else 
-    mongodump -h $MONGO_HOST -o $BACKUP_FOLDER
+  if [[ -n "$MONGO_URI" ]]; then
+    mongodump --uri $MONGO_URI -o $BACKUP_FOLDER
+  else
+    # if 'MONGO_DB' is empty then backup all databases
+    if [[ -n "$MONGO_DB" ]]; then
+      mongodump -h $MONGO_HOST -d $MONGO_DB -o $BACKUP_FOLDER
+    else
+      mongodump -h $MONGO_HOST -o $BACKUP_FOLDER
+    fi
   fi
 
   tar -zcvf $BACKUP_NAME.tgz -C /tmp/ $BACKUP_NAME

@@ -15,7 +15,7 @@ make_backup() {
 
   mkdir "$BACKUP_FOLDER"
 
-  if [[-n "$MONGO_URI" ]]; then
+  if [[ -n "$MONGO_URI" ]]; then
     mongodump --uri $MONGO_URI -o $BACKUP_FOLDER
   else
     # if 'MONGO_DB' is empty then backup all databases

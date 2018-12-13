@@ -16,9 +16,9 @@ make_backup() {
 
   # if 'MONGO_DB' is empty then backup all databases
   if [[ -n "$MONGO_DB" ]]; then
-    /mongodump -h $MONGO_HOST -d $MONGO_DB -o $BACKUP_FOLDER
+    mongodump -h $MONGO_HOST -d $MONGO_DB -o $BACKUP_FOLDER
   else 
-    /mongodump -h $MONGO_HOST -o $BACKUP_FOLDER
+    mongodump -h $MONGO_HOST -o $BACKUP_FOLDER
   fi
 
   tar -zcvf $BACKUP_NAME.tgz -C /tmp/ $BACKUP_NAME
@@ -27,23 +27,22 @@ make_backup() {
 AZURE_CONTAINER=${AZURE_CONTAINER}
 AZURE_STORAGE_ACCOUNT=${AZURE_STORAGE_ACCOUNT}
 AZURE_STORAGE_KEY=${AZURE_STORAGE_KEY}
+AZURE_ENDPOINT_SUFFIX=${AZURE_ENDPOINT_SUFFIX:-blob.core.windows.net}
 
-AZURE_STORAGE_CONNECTION_STRING="DefaultEndpointsProtocol=https;BlobEndpoint=https://$AZURE_STORAGE_ACCOUNT.blob.core.windows.net/;AccountName=$AZURE_STORAGE_ACCOUNT;AccountKey=$AZURE_STORAGE_KEY"
+AZURE_STORAGE_CONNECTION_STRING="DefaultEndpointsProtocol=https;AccountName=$AZURE_STORAGE_ACCOUNT;AccountKey=$AZURE_STORAGE_KEY;EndpointSuffix=$AZURE_ENDPOINT_SUFFIX"
 
 upload_backup() {
-  # Send to cloud storage
-  azure telemetry --disable
 
   # Create container if it doesn't exist yet (upload fails otherwise)
   set +e
-  grep -wq $AZURE_CONTAINER <<< $(azure storage container list -c $AZURE_STORAGE_CONNECTION_STRING)
+  grep -wq $AZURE_CONTAINER <<< $(az storage container list --connection-string $AZURE_STORAGE_CONNECTION_STRING)
   CONTAINER_EXISTS=$?
   set -e
   if [ "$CONTAINER_EXISTS" -gt "0" ]; then
-    azure storage container create $AZURE_CONTAINER -c $AZURE_STORAGE_CONNECTION_STRING
+    az storage container create -n $AZURE_CONTAINER --connection-string $AZURE_STORAGE_CONNECTION_STRING
   fi
 
-  azure storage blob upload -q $BACKUP_NAME.tgz $AZURE_CONTAINER -c $AZURE_STORAGE_CONNECTION_STRING
+  az storage blob upload -f $BACKUP_NAME.tgz -n $BACKUP_NAME.tgz -c $AZURE_CONTAINER --connection-string $AZURE_STORAGE_CONNECTION_STRING
 
 }
 

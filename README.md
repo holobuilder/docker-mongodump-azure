@@ -12,6 +12,7 @@ Single-Shot-Run:
     -e "AZURE_CONTAINER=<storage container name>" \
     -e "AZURE_STORAGE_ACCOUNT=<storage account name>" \
     -e "AZURE_STORAGE_KEY=<storage account key>" \
+    [-e "AZURE_ENDPOINT_SUFFIX=<endpoint suffix like core.cloudapi.de>" \]
     holobuilder/mongodump-azure
 ```
 
